@@ -17,15 +17,30 @@ const getUsuarios = (req = request, res = response) => {
 }
 
 //Función para enviar datos cuando se ejecuta un PUT desde el front
-const putUsuarios = (req, res = response) => {
+const putUsuarios = async (req, res = response) => {
 
     // se obtienen los parámetros que fueron enviados desde la url de la petición PUT en el front
-    const id = req.params.id;
+    //const id = req.params.id;
+
+    const { nickname } = req.params.nickname;
+    const { estado } = req.body;
+
+    const usuario = await Usuario.updateOne(nickname,estado,{ new: true })
+    .then(usuario => {
+        if (!usuario) {
+          return res.status(404).send({ message: `User with nickname ${nickname} not found` });
+        }
+        res.send({ message: 'User updated successfully', usuario});
+      })
+      .catch(err => {
+        console.error(err);
+        res.status(500).send({ message: 'Error updating user' });
+      });
 
     //se envia respuesta en formato JSON
     res.json({
         msg: 'Put API - Controlador',
-        id
+        usuario
     });
 }
 

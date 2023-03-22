@@ -23,7 +23,7 @@ const router = Router(); //Se instancia la clase Router la cual ayudará con el 
 //Se definen las rutas para cada método 
 router.get('/', getUsuarios)
 
-router.put('/:id', putUsuarios)
+router.put('/:nickname', putUsuarios)
 
 router.post('/',[
         //Los siguientes middlewares se ejecutaran antes de continuar con el método POST, verificará que todo se encuentre bien
