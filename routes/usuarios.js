@@ -4,8 +4,11 @@ const { getUsuarios ,
         putUsuarios , 
         postUsuarios , 
         deleteUsuarios , 
-        patchUsuarios } = require('../controllers/usuarios');
+        patchUsuarios,
+        getUsuariosPorRol
+ } = require('../controllers/usuarios');
 const {validarCampos} = require('../middlewares/validaciones');
+const { existeUsuarioPorId } = require('../helpers/db-validators');
 
 const router = Router(); //Se instancia la clase Router la cual ayudará con el enrutamiento hacia las rutas del controlador
 
@@ -23,7 +26,9 @@ const router = Router(); //Se instancia la clase Router la cual ayudará con el 
 //Se definen las rutas para cada método 
 router.get('/', getUsuarios)
 
-router.put('/:nickname', putUsuarios)
+router.get('/:rol', getUsuariosPorRol)
+
+router.put('/:nickname',putUsuarios)
 
 router.post('/',[
         //Los siguientes middlewares se ejecutaran antes de continuar con el método POST, verificará que todo se encuentre bien
@@ -32,7 +37,7 @@ router.post('/',[
         validarCampos
 ] ,postUsuarios)
 
-router.delete('/', deleteUsuarios)
+router.delete('/:nickname', deleteUsuarios)
 
 router.patch('/', patchUsuarios)
 

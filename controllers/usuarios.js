@@ -4,44 +4,85 @@ const bcryptjs = require('bcryptjs');
 const errors = require('../middlewares/validaciones');
 
 //Función para enviar datos cuando se ejecuta un GET desde el front
-const getUsuarios = (req = request, res = response) => {
+const getUsuarios = async (req = request, res = response) => {
 
     // se obtienen los parámetros que fueron enviados desde la url de la petición GET en el front
     const query = req.query;
+    const {estado} = req.query;
+    
+    //console.log(estado);
+    //console.log(query);
+    if(estado == undefined){ //si estado no fue enviado en los parámetros de la URL
+        //GET para todos obtener todos los usuarios de la base de datos
+        const usuarios = await Usuario.find(); // dentro del find() se puede enviar una consulta específica, ejemplo: find({estado : true})
+        const total = await Usuario.countDocuments();
 
-    //se envia respuesta en formato JSON
-    res.json({
-        msg: 'Get API - controlador',
-        query
-    });
+        //se envia respuesta en formato JSON   
+        res.json({
+            total,
+            usuarios
+        });
+    }else{ //Si estado fue enviado en parámetros de la URL
+        
+        //se obtienen los usuairos con el estadodefinido
+        const usuarios = await Usuario.find({estado});
+        const total = await Usuario.countDocuments({estado});
+        res.json({
+            total,
+            usuarios
+        });
+    }   
+
 }
+    
+//Método para obtener los usuarios por rol
+const getUsuariosPorRol = async (req, res = response) => {
+    
+    //se obtiene el valor que fue enviado en la ruta del navegador
+    const rol = req.params.rol;
+
+    //se cuenta el total de documentos por rol
+    const total = await Usuario.countDocuments({rol})
+    //se encuentran los usuairo con ese rol
+    const usuarios = await Usuario.find({rol});
+
+    res.json({
+        total,
+        usuarios
+    })
+}
+
 
 //Función para enviar datos cuando se ejecuta un PUT desde el front
 const putUsuarios = async (req, res = response) => {
 
     // se obtienen los parámetros que fueron enviados desde la url de la petición PUT en el front
-    //const id = req.params.id;
-
-    const { nickname } = req.params.nickname;
+    const nickname = req.params.nickname;
+    // se obtiene el valor enviado en el body del JSON
     const { estado } = req.body;
+    console.log(estado);
+    console.log(nickname);
 
-    const usuario = await Usuario.updateOne(nickname,estado,{ new: true })
+    //se buscan los usuarios con el nickname especificado y se cambia el estado al valor especificado y se almacena en la variable 'usuario' el nuevo valor de usuario (documento actualizado)
+    const usuario = await Usuario.findOneAndUpdate({nickname},{estado}, { new : true } )
     .then(usuario => {
         if (!usuario) {
-          return res.status(404).send({ message: `User with nickname ${nickname} not found` });
+          //si la variable usuario está vacia, es decir, que no encontró usuario con ese nickname, el sistema mostrará ese mensaje como respuesta
+          return res.status(404).send({ message: `User with nickname ${nickname} not found` }); 
         }
-        res.send({ message: 'User updated successfully', usuario});
+        //si todo funciona bien y la variable usuario si tiene valor entonces se envia el mensaje
+        res.json({
+            msg: 'Usuario actualizado correctamente',
+            usuario
       })
+    })
+    //se captura el error en caso de que suceda
       .catch(err => {
         console.error(err);
         res.status(500).send({ message: 'Error updating user' });
       });
 
-    //se envia respuesta en formato JSON
-    res.json({
-        msg: 'Put API - Controlador',
-        usuario
-    });
+    console.log(usuario);
 }
 
 //Función para enviar datos cuando se ejecuta un POST desde el front
@@ -77,11 +118,16 @@ const postUsuarios = async (req, res = response) => {
 }
 
 //Función para enviar datos cuando se ejecuta un DELETE desde el front
-const deleteUsuarios = (req, res = response) => {
+const deleteUsuarios = async (req, res = response) => {
+
+    const nickname = req.params.nickname;
+
+    usuario = await Usuario.findOneAndDelete({nickname});
 
     //se envia respuesta en formato JSON
     res.json({
-        msg: 'Delete API - Controlador'
+        msg: 'Delete API - Controlador',
+        usuario
     });
 }
 
@@ -99,5 +145,6 @@ module.exports = {
     putUsuarios,
     postUsuarios,
     deleteUsuarios,
-    patchUsuarios
+    patchUsuarios,
+    getUsuariosPorRol
 }
