@@ -10,7 +10,7 @@ const getUsuarios = async (req = request, res = response) => {
     const query = req.query;
     const {estado} = req.query;
     
-    //console.log(estado);
+    console.log(estado);
     //console.log(query);
     if(estado == undefined){ //si estado no fue enviado en los parámetros de la URL
         //GET para todos obtener todos los usuarios de la base de datos
@@ -22,7 +22,7 @@ const getUsuarios = async (req = request, res = response) => {
             total,
             usuarios
         });
-    }else{ //Si estado fue enviado en parámetros de la URL
+    }else { //Si estado fue enviado en parámetros de la URL
         
         //se obtienen los usuairos con el estadodefinido
         const usuarios = await Usuario.find({estado});
@@ -40,16 +40,34 @@ const getUsuariosPorRol = async (req, res = response) => {
     
     //se obtiene el valor que fue enviado en la ruta del navegador
     const rol = req.params.rol;
+    console.log(rol);
+
+    if(rol == 'ADMIN' || rol == 'HABITANTE' || rol == 'VISITANTE'){
+        const total = await Usuario.countDocuments({rol})
+        //se encuentran los usuairo con ese rol
+        const usuarios = await Usuario.find({rol});
+
+        res.json({
+            total,
+            usuarios
+        })
+    } else {
+        const usuario = await Usuario.find({nickname : rol});
+
+        res.json({
+            usuario
+        })
+    }
 
     //se cuenta el total de documentos por rol
-    const total = await Usuario.countDocuments({rol})
+    //const total = await Usuario.countDocuments({rol})
     //se encuentran los usuairo con ese rol
-    const usuarios = await Usuario.find({rol});
+    //const usuarios = await Usuario.find({rol});
 
-    res.json({
-        total,
-        usuarios
-    })
+    //res.json({
+    //    total,
+    //    usuarios
+    //})
 }
 
 
