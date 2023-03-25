@@ -30,7 +30,10 @@ router.get('/', getUsuarios)
 
 router.get('/:rol', getUsuariosPorRol)
 
-router.put('/:nickname',putUsuarios)
+router.put('/:nickname',[
+        validarJwt, //Valida que exista token en la solicitud
+        validarRol //Valida el rol del usuario que va a realiza la acción
+],putUsuarios)
 
 router.post('/',[
         //Los siguientes middlewares se ejecutaran antes de continuar con el método POST, verificará que todo se encuentre bien
@@ -40,8 +43,8 @@ router.post('/',[
 ] ,postUsuarios)
 
 router.delete('/:nickname', [
-        validarJwt,
-        validarRol
+        validarJwt, //Valida que exista token en la solicitud
+        validarRol //Valida el rol del usuario que va a realiza la acción
 ],deleteUsuarios)
 
 router.patch('/', patchUsuarios)

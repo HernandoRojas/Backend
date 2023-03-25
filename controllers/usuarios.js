@@ -138,41 +138,23 @@ const postUsuarios = async (req, res = response) => {
 //Función para enviar datos cuando se ejecuta un DELETE desde el front
 const deleteUsuarios = async (req, res = response) => {
 
-    const nickname = req.params.nickname;
-    //const usuarioAutenticado = req.usuario;
+    const nickname = req.params.nickname; //Obtiene el nickname del usuario que se quiere eliminar y fue enviado por la url
 
-    //const rol = usuarioAutenticado.rol;
-    //console.log(rol);
-   
-    //if(rol == 'ADMIN'){
-        let usuario = await Usuario.findOne({nickname});
-        console.log(usuario);
+    let usuario = await Usuario.findOne({nickname}); // Busca el usuario por nickname en la BD y lo guarda en la variable
+    console.log(usuario); //mostrar el contenido de la variable
 
 
-            if(usuario != null){
-                usuario = await Usuario.findOneAndDelete({nickname});
-
-                res.json({
-                    msg: 'Usuario Eliminado',
-                    usuario
-            });
-            } else {
-                res.json({
-                    msg: 'El usuario a eliminar no existe'
-            });
-            }
-
-    //} else {
-        //res.status(400).json({
-        //    msg : 'No tienes permisos para realizar esta acción'
-        //})
-    //}
-
-    
-
-
-    //se envia respuesta en formato JSON
-    
+    if(usuario != null){ //si se encontró el usuario
+        usuario = await Usuario.findOneAndDelete({nickname}); // se elimina el usuario con ese nickname
+        res.json({
+            msg: 'Usuario Eliminado', //se envia mensaje de respuesta
+            usuario
+        });
+    } else {//si la variable usuario esta vacia, quiere decir que no se encontró usuario con ese nickname
+        res.json({
+        msg: 'El usuario a eliminar no existe'
+        });
+    }
 }
 
 //Función para enviar datos cuando se ejecuta un PATCH desde el front

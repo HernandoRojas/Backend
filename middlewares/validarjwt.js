@@ -5,9 +5,9 @@ const usuario = require('../models/usuario');
 
 const validarJwt = async (req = request, res = response, next) => {
 
-    const token = req.header('x-token');
+    const token = req.header('x-token'); //Obtiene el token enviado en el header junto con la solicitud a la URL
 
-    if(!token){
+    if(!token){ //Valida si existe token en la petición
         return res.status(401).json({
             msg : 'No hay token en la petición'
         });
@@ -16,14 +16,14 @@ const validarJwt = async (req = request, res = response, next) => {
 
     //Validación del JWT
     try {
-        const {uid} = jwt.verify(token, process.env.SECRETORPRIVATEKEY);
+        const {uid} = jwt.verify(token, process.env.SECRETORPRIVATEKEY); //Se obtiene el uid de la persona logueada por medio del jwt
 
         //Se extrae el usuario que está autenticado que corresponde al uid
         const usuario = await Usuario.findById(uid);
         
 
-        
-        req.usuario = usuario;
+
+        req.usuario = usuario; //Se asignan los datos de ese usuario al usuario que se esta manejando en la petición
 
         next();
     } catch (error) {
