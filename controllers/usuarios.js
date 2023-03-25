@@ -139,14 +139,40 @@ const postUsuarios = async (req, res = response) => {
 const deleteUsuarios = async (req, res = response) => {
 
     const nickname = req.params.nickname;
+    //const usuarioAutenticado = req.usuario;
 
-    usuario = await Usuario.findOneAndDelete({nickname});
+    //const rol = usuarioAutenticado.rol;
+    //console.log(rol);
+   
+    //if(rol == 'ADMIN'){
+        let usuario = await Usuario.findOne({nickname});
+        console.log(usuario);
+
+
+            if(usuario != null){
+                usuario = await Usuario.findOneAndDelete({nickname});
+
+                res.json({
+                    msg: 'Usuario Eliminado',
+                    usuario
+            });
+            } else {
+                res.json({
+                    msg: 'El usuario a eliminar no existe'
+            });
+            }
+
+    //} else {
+        //res.status(400).json({
+        //    msg : 'No tienes permisos para realizar esta acción'
+        //})
+    //}
+
+    
+
 
     //se envia respuesta en formato JSON
-    res.json({
-        msg: 'Delete API - Controlador',
-        usuario
-    });
+    
 }
 
 //Función para enviar datos cuando se ejecuta un PATCH desde el front

@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { body } = require('express-validator');
+const { body, check } = require('express-validator');
 const { getUsuarios , 
         putUsuarios , 
         postUsuarios , 
@@ -9,6 +9,8 @@ const { getUsuarios ,
  } = require('../controllers/usuarios');
 const {validarCampos} = require('../middlewares/validaciones');
 const { existeUsuarioPorId } = require('../helpers/db-validators');
+const { validarJwt } = require('../middlewares/validarjwt');
+const { validarRol } = require('../middlewares/validarrol');
 
 const router = Router(); //Se instancia la clase Router la cual ayudará con el enrutamiento hacia las rutas del controlador
 
@@ -37,7 +39,10 @@ router.post('/',[
         validarCampos
 ] ,postUsuarios)
 
-router.delete('/:nickname', deleteUsuarios)
+router.delete('/:nickname', [
+        validarJwt,
+        validarRol
+],deleteUsuarios)
 
 router.patch('/', patchUsuarios)
 

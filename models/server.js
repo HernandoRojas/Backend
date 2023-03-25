@@ -8,6 +8,7 @@ class Server{
     constructor(){
         this.app = express() //se levanta el servidor (aplicación express)
         this.port = process.env.PORT; //Se define el puerto en el que corre el servidor por medio de la variable puerto que viene de la variable global en el archivo .env
+        this.authPath = '/api/auth';
         this.usuariosPath = '/api/usuarios';
 
         //Conectar a base de datos
@@ -35,7 +36,9 @@ class Server{
   
     routes(){
         //Se definen las rutas de la aplicacicón
-        this.app.use(this.usuariosPath, require('../routes/usuarios'))
+        this.app.use(this.authPath, require('../routes/auth'));
+        this.app.use(this.usuariosPath, require('../routes/usuarios'));
+        
     }
 
     listen(){
