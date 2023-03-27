@@ -2,6 +2,7 @@ const { response, request } = require('express');
 const Usuario = require('../models/usuario');
 const bcryptjs = require('bcryptjs');
 const errors = require('../middlewares/validaciones');
+const path = require('path');
 
 //Función para enviar datos cuando se ejecuta un GET desde el front
 const getUsuarios = async (req = request, res = response) => {
@@ -107,8 +108,11 @@ const putUsuarios = async (req, res = response) => {
 const postUsuarios = async (req, res = response) => {
 
     // se obtienen los parámetros que fueron enviados desde la url de la petición POST en el front
-    const {nombre, apellido, nickname, clave, rol, imagen} = req.body;
-    const usuario = new Usuario({nombre, apellido, nickname, clave, rol, imagen}); // Se instancia el usuairo al momento de la creación del mismo
+    const {nombre, apellido, nickname, clave, rol} = req.body;
+    const {imagen} = req.files;
+    //imagen.name = nickname;
+    const nombreimagen = imagen.name;//`${imagen.name}.jpg`;
+    const usuario = new Usuario({nombre, apellido, nickname, clave, rol, imagen : nombreimagen}); // Se instancia el usuarioo al momento de la creación del mismo
 
     //Se verifica si el nickname existe
     const validarNick = await Usuario.findOne({nickname})
@@ -122,17 +126,36 @@ const postUsuarios = async (req, res = response) => {
 
     // Se encripta contraseña
     const salt = bcryptjs.genSaltSync();
-    usuario.clave = bcryptjs.hashSync(clave, salt)
+    usuario.clave = bcryptjs.hashSync(clave, salt);
+
+    if (!req.files || Object.keys(req.files).length === 0 || !req.files.imagen) {
+        res.status(400).json({
+            msg:'No se encontró archivo para cargar'
+        });
+        return;
+    }
+
+    //let {imagen} = req.files;
+    //imagen.name = nickname;
+    const cargaPath = path.join(__dirname, '../imagenes/', imagen.name);
+
+
+    // Use the mv() method to place the file somewhere on your server
+    imagen.mv(cargaPath, (err) => {
+        if (err){
+
+            return res.status(500).json({
+                err
+            });
+        }
+        res.json({
+            msg: 'El archivo fue cargado con éxito a ' + cargaPath,
+            nombre, apellido, nickname, clave, rol, nombreimagen
+        });
+    });
 
     //Guardar usuario
     await usuario.save(); // se guardan los datos en la base de datos creandose el documento(registro) en la base de datos en la colección (Tabla) de usuarios 
-
-    //se envia respuesta en formato JSON
-    res.json({
-        msg: 'Post API - Controlador',
-        nombre, apellido, nickname, clave, rol, imagen
-    });
-    //res.json(body) // para mostrar solo el body tal como viene
 }
 
 //Función para enviar datos cuando se ejecuta un DELETE desde el front

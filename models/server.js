@@ -1,5 +1,6 @@
 const express = require('express'); // se importa express
 const cors = require('cors');
+const fileUpload = require('express-fileupload');
 const { dbConnection } = require('../database/config');
 
 class Server{
@@ -33,6 +34,12 @@ class Server{
         //metodo para definir los middleware - el middleware es una función que se ejecuta cuando se levanta el servidor
         this.app.use(express.static('public')); //Directorio público (carpeta pública)
         this.app.use(cors());
+
+        //Para manejar la carga de archivos
+        this.app.use(fileUpload({
+            useTempFiles : true,
+            tempFileDir : '/tmp/'
+        }));
     }
   
     routes(){
