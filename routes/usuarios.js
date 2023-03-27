@@ -36,6 +36,8 @@ router.put('/:nickname',[
 ],putUsuarios)
 
 router.post('/',[
+        validarJwt, //Valida que exista token en la solicitud
+        validarRol, //Valida el rol del usuario que va a realiza la acción
         //Los siguientes middlewares se ejecutaran antes de continuar con el método POST, verificará que todo se encuentre bien
         body('nickname','El nickname ingresado no es válido').isAlphanumeric(),
         body('rol', 'El rol debe ser un rol válido' ).isIn(['ADMIN','HABITANTE','VISITANTE']),
