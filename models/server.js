@@ -10,6 +10,7 @@ class Server{
         this.port = process.env.PORT; //Se define el puerto en el que corre el servidor por medio de la variable puerto que viene de la variable global en el archivo .env
         this.authPath = '/api/auth';
         this.usuariosPath = '/api/usuarios';
+        this.ingresosPath = '/api/ingresos';
 
         //Conectar a base de datos
         this.conectarBD();
@@ -38,6 +39,7 @@ class Server{
         //Se definen las rutas de la aplicacicón
         this.app.use(this.authPath, require('../routes/auth'));
         this.app.use(this.usuariosPath, require('../routes/usuarios'));
+        this.app.use(this.ingresosPath, require('../routes/ingresos'));
         
     }
 
