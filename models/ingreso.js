@@ -12,7 +12,7 @@ const ingresoSchema = Schema({
     },
     resultado : {
         type: Boolean,
-        default : false
+        default : true
     }
 
 })
