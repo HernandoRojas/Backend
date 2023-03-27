@@ -62,6 +62,16 @@ const getIngreso = async (req = request, res = response) => {
             ingresos
         });
     } else if(!inicio){ //Se recibió nickname pero no fechas
+
+        //Se valida si existe el usuario
+        const validarNick = await Usuario.findOne({nickname})
+        if (!validarNick){
+            return res.status(400).json( //Con la palabra return basta para que el controlador se detenga y no se continue ejecutando el método post
+            {
+                msg : "El nickname no existe"
+            });
+        };
+
         const ingresos = await Ingreso.find({nickname,fecha : {
             $gte : semanaPasada,
             $lte : hoy
@@ -76,11 +86,21 @@ const getIngreso = async (req = request, res = response) => {
         });
     } else { //caso donde se recibe nick y fechas
 
+        const validarNick = await Usuario.findOne({nickname})
+        if (!validarNick){
+            return res.status(400).json( //Con la palabra return basta para que el controlador se detenga y no se continue ejecutando el método post
+            {
+                msg : "El nickname no existe"
+            });
+        };
+
         inicio = new Date(inicio); //se pasa el string a un formato fecha
         fin = new Date(fin); //se pasa el string a un formato fecha
-
+        fin = new Date(fin.getTime() + 24 * 60 * 60 * 1000);
         inicio = inicio.toISOString(); //se pasa el formato fecha a un formato  ISODate (fecha ISO)
         fin = fin.toISOString(); //se pasa el formato fecha a un formato  ISODate (fecha ISO)
+
+        console.log(fin);
 
         const consulta = await Ingreso.find({ nickname,
             fecha : {
