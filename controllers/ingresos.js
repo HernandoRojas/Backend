@@ -3,9 +3,11 @@ const Usuario = require('../models/usuario');
 const Ingreso = require('../models/ingreso');
 //const bcryptjs = require('bcryptjs');
 //const errors = require('../middlewares/validaciones');
+const {ingresosDia} = require('../helpers/ingresospordia');
 
 
 const postIngreso = async (req = request, res = response) => {
+    
     let fecha = new Date();
     let hoy = new Date(fecha.getTime() - 5 * 60 * 60 * 1000 ); // Se restan 5 horas
 
@@ -58,7 +60,6 @@ const getIngreso = async (req = request, res = response) => {
 
         //se envia respuesta en formato JSON   
         res.json({
-            total,
             ingresos
         });
     } else if(!inicio){ //Se recibió nickname pero no fechas
@@ -85,7 +86,7 @@ const getIngreso = async (req = request, res = response) => {
             ingresos
         });
     } else { //caso donde se recibe nick y fechas
-
+        
         const validarNick = await Usuario.findOne({nickname})
         if (!validarNick){
             return res.status(400).json( //Con la palabra return basta para que el controlador se detenga y no se continue ejecutando el método post
@@ -124,7 +125,65 @@ const getIngreso = async (req = request, res = response) => {
 
 }
 
+const getIngresoUltimaSemana = async (req = request, res = response) => {
+
+    const {nickname} = req.query;
+
+    let hoy= new Date();
+    hoy = new Date(hoy.getTime() - 5 * 60 * 60 * 1000);
+
+    let semanaPasada = new Date(hoy.getTime() - 7 * 24 * 60 * 60 * 1000); // Restamos 7 días en milisegundos
+    hoy = hoy.toISOString(); //se pasa el formato fecha a un formato  ISODate (fecha ISO)
+    semanaPasada  = semanaPasada.toISOString();
+
+    if (nickname == undefined){
+        const ingresos = await Ingreso.find({fecha : {
+            $gte : semanaPasada,
+            $lte : hoy
+        }});
+        const total = await Ingreso.countDocuments({fecha : {
+            $gte : semanaPasada,
+            $lte : hoy
+        }});
+     
+        const respuesta = ingresosDia(ingresos);
+    
+        res.json({
+           // msg: 'Funciona correctamente'
+           respuesta
+        })
+    } else {
+        //Se valida si existe el usuario
+        const validarNick = await Usuario.findOne({nickname})
+        if (!validarNick){
+            return res.status(400).json( //Con la palabra return basta para que el controlador se detenga y no se continue ejecutando el método post
+            {
+                msg : "El nickname no existe"
+            });
+        };
+
+        const ingresos = await Ingreso.find({nickname, fecha : {
+            $gte : semanaPasada,
+            $lte : hoy
+        }});
+        const total = await Ingreso.countDocuments({nickname, fecha : {
+            $gte : semanaPasada,
+            $lte : hoy
+        }});
+     
+        const respuesta = ingresosDia(ingresos);
+    
+        res.json({
+           // msg: 'Funciona correctamente'
+           respuesta
+        })
+    }
+
+    
+}
+
 module.exports = {
     postIngreso,
-    getIngreso
+    getIngreso,
+    getIngresoUltimaSemana
 }

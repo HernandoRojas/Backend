@@ -1,7 +1,8 @@
 const { Router } = require('express');
 const { body , check} = require('express-validator');
 const { postIngreso,
-        getIngreso 
+        getIngreso,
+        getIngresoUltimaSemana
 } = require('../controllers/ingresos')
 const { validarCampos } = require('../middlewares/validaciones');
 
@@ -10,6 +11,8 @@ const router = Router(); //Se instancia la clase Router la cual ayudará con el 
 router.post('/', postIngreso)
 
 router.get('/', getIngreso)
+
+router.get('/UltimaSemana/', getIngresoUltimaSemana)
 
 //router.get(':nickname', getIngresoPorNick)
 
