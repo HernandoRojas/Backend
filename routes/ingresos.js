@@ -2,7 +2,8 @@ const { Router } = require('express');
 const { body , check} = require('express-validator');
 const { postIngreso,
         getIngreso,
-        getIngresoUltimaSemana
+        getIngresoUltimaSemana,
+        getImagenes
 } = require('../controllers/ingresos')
 const { validarCampos } = require('../middlewares/validaciones');
 
@@ -13,6 +14,8 @@ router.post('/', postIngreso)
 router.get('/', getIngreso)
 
 router.get('/UltimaSemana/', getIngresoUltimaSemana)
+
+router.get('/imagenes/', getImagenes)
 
 //router.get(':nickname', getIngresoPorNick)
 

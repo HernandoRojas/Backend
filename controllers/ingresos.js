@@ -1,9 +1,12 @@
 const { response, request } = require('express');
+const path = require('path');
 const Usuario = require('../models/usuario');
 const Ingreso = require('../models/ingreso');
 //const bcryptjs = require('bcryptjs');
 //const errors = require('../middlewares/validaciones');
 const {ingresosDia} = require('../helpers/ingresospordia');
+const {fs} = require('fs/promises');
+const archiver = require('archiver');
 
 
 const postIngreso = async (req = request, res = response) => {
@@ -182,8 +185,47 @@ const getIngresoUltimaSemana = async (req = request, res = response) => {
     
 }
 
+const getImagenes = async (req = request, res = reponse ) => {
+
+    const {nickname} = req.query;
+
+    if (nickname != undefined ){
+       //Se verifica si el nickname existe
+       const validarNick = await Usuario.findOne({nickname})
+       if (validarNick){
+           //Devolver imagen
+           const usuario = await Usuario.find({nickname});
+
+           const estado = usuario.map( usuario => usuario.estado);
+           const imagen = usuario.map( usuario=> usuario.imagen);
+           console.log(imagen[0]);
+           if(estado){
+               const rutaImagen = path.join(__dirname, '../imagenes/', imagen[0]);
+               // Enviamos la imagen al cliente
+               res.sendFile(rutaImagen);
+           } else {
+               res.json({
+                   msg: 'el usuario no se encuentra activo',
+                   estado : false
+               })
+           }
+       } else {
+           return res.status(400).json( //Con la palabra return basta para que el controlador se detenga y no se continue ejecutando el método post
+               {
+                   msg : "El nickname no existe"
+               }
+           );
+       }
+    } else {
+        res.status(400).json({
+            msg: 'no se recibió número de usuario'
+        })
+    }
+}
+
 module.exports = {
     postIngreso,
     getIngreso,
-    getIngresoUltimaSemana
+    getIngresoUltimaSemana,
+    getImagenes
 }
