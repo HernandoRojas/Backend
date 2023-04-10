@@ -12,16 +12,17 @@ const validarJwt = async (req = request, res = response, next) => {
             msg : 'No hay token en la petición'
         });
     }
-    console.log(token);
+    //console.log(token);
 
     //Validación del JWT
     try {
         const {uid} = jwt.verify(token, process.env.SECRETORPRIVATEKEY); //Se obtiene el uid de la persona logueada por medio del jwt
-
+        //console.log(exp);
         //Se extrae el usuario que está autenticado que corresponde al uid
         const usuario = await Usuario.findById(uid);
         
-
+        //const tokenExpirado = exp < Date.now() / 1000;
+        
 
         req.usuario = usuario; //Se asignan los datos de ese usuario al usuario que se esta manejando en la petición
 

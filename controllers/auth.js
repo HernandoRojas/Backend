@@ -52,6 +52,17 @@ const login = async (req, res = response) => {
 
 }
 
+const validarToken = async (req, res = response) => {
+    const usuario = req.usuario;
+
+    const nickname = usuario.nickname;
+
+    res.json({
+        nickname
+    })
+}
+
 module.exports = {
-    login
+    login,
+    validarToken
 }
