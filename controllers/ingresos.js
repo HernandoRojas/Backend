@@ -148,16 +148,16 @@ const getIngresoUltimaSemana = async (req = request, res = response) => {
             $gte : semanaPasada,
             $lte : hoy
         }});
-     
-        const respuesta = ingresosDia(ingresos);
+        //console.log(ingresos);
+        const ingresosPorFecha = ingresosDia(ingresos);
     
         res.json({
            // msg: 'Funciona correctamente'
-           respuesta
-        })
+           ingresos: ingresosPorFecha
+        });
     } else {
         //Se valida si existe el usuario
-        const validarNick = await Usuario.findOne({nickname})
+        const validarNick = await Ingreso.findOne({nickname})
         if (!validarNick){
             return res.status(400).json( //Con la palabra return basta para que el controlador se detenga y no se continue ejecutando el método post
             {
@@ -174,12 +174,13 @@ const getIngresoUltimaSemana = async (req = request, res = response) => {
             $lte : hoy
         }});
      
-        const respuesta = ingresosDia(ingresos);
+        const ingresosPorFecha = ingresosDia(ingresos);
     
         res.json({
            // msg: 'Funciona correctamente'
-           respuesta
-        })
+           ingresos: ingresosPorFecha
+        });
+
     }
 
     
