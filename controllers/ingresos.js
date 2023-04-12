@@ -186,7 +186,7 @@ const getIngresoUltimaSemana = async (req = request, res = response) => {
     
 }
 
-const getImagenes = async (req = request, res = reponse ) => {
+const getImagenes = async (req = request, res = response ) => {
 
     const {nickname} = req.query;
 
@@ -204,6 +204,55 @@ const getImagenes = async (req = request, res = reponse ) => {
                const rutaImagen = path.join(__dirname, '../imagenes/', imagen[0]);
                // Enviamos la imagen al cliente
                res.sendFile(rutaImagen);
+               console.log(rutaImagen);
+           } else {
+               res.json({
+                   msg: 'el usuario no se encuentra activo',
+                   estado : false
+               })
+           }
+       } else {
+           return res.status(400).json( //Con la palabra return basta para que el controlador se detenga y no se continue ejecutando el método post
+               {
+                   msg : "El nickname no existe"
+               }
+           );
+       }
+    } else {
+        res.status(400).json({
+            msg: 'no se recibió número de usuario'
+        })
+    }
+}
+
+const getImagenesUrl = async (req = request, res = response) => {
+    //const nickname = req.params.nickname;
+    //console.log(nickname);
+
+    const url = req.params.nickname;
+    //console.log(url);
+    const split = url.split('.');
+
+    const nickname = split[0];
+    //console.log(nickname);
+    if (nickname != undefined ){
+       //Se verifica si el nickname existe
+       const validarNick = await Usuario.findOne({nickname})
+       if (validarNick){
+           //Devolver imagen
+           const usuario = await Usuario.find({nickname});
+
+           const estado = usuario.map( usuario => usuario.estado);
+           const imagen = usuario.map( usuario=> usuario.imagen);
+           console.log(imagen[0]);
+           if(estado){
+               const rutaImagen = path.join(__dirname, '../imagenes/', imagen[0]);
+               // Enviamos la imagen al cliente
+               res.sendFile(rutaImagen);
+               //res.json({
+                //rutaImagen
+                //});
+               //console.log(rutaImagen);
            } else {
                res.json({
                    msg: 'el usuario no se encuentra activo',
@@ -228,5 +277,6 @@ module.exports = {
     postIngreso,
     getIngreso,
     getIngresoUltimaSemana,
-    getImagenes
+    getImagenes,
+    getImagenesUrl
 }

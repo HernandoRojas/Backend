@@ -3,7 +3,8 @@ const { body , check} = require('express-validator');
 const { postIngreso,
         getIngreso,
         getIngresoUltimaSemana,
-        getImagenes
+        getImagenes,
+        getImagenesUrl
 } = require('../controllers/ingresos')
 const { validarCampos } = require('../middlewares/validaciones');
 
@@ -16,6 +17,8 @@ router.get('/', getIngreso)
 router.get('/UltimaSemana/', getIngresoUltimaSemana)
 
 router.get('/imagenes/', getImagenes)
+
+router.get('/imagen/:nickname', getImagenesUrl)
 
 //router.get(':nickname', getIngresoPorNick)
 
