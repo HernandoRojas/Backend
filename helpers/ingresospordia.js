@@ -78,10 +78,25 @@ const ingresosDia = (ingresos) => {
     return acumulador;
   }, {});
   
-  console.log(ingresosPorFecha);
-  return ingresosPorFecha;
+  console.log(ingresosPorFecha); ////////////////////////////////////////
+
+  const ingresosArreglo = [];
+
+  for (const fecha in ingresosPorFecha) {
+    for (const usuario in ingresosPorFecha[fecha]) {
+     ingresosArreglo.push({
+       usuario,
+        fecha,
+        visitas: ingresosPorFecha[fecha][usuario]
+      });
+    }
+  }
+
+  console.log(ingresosArreglo);
+  return ingresosArreglo;
 
 }
+
 
 module.exports = {
     ingresosDia
